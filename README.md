@@ -149,18 +149,25 @@ docker logs wazuh.dashboard --tail 50
 ```bash
 curl -sO https://packages.wazuh.com/4.14/wazuh-certs-tool.sh
 bash wazuh-certs-tool.sh -A .secrets/root-ca/certs/root-ca.pem .secrets/root-ca/certs/root-ca-key.pem
-# copy + cleanup
+
+## Post-Setup (ครั้งแรก)
+
+หลังจาก "docker compose up -d" รอ 30-60 วินาทีให้ services start แล้ว:
+
+### 1. ตั้งค่า Auth Password
+```bash
+docker exec wazuh.manager bash -c "echo SiamSunAgent2026 > /var/ossec/etc/authd.pass && chmod 600 /var/ossec/etc/authd.pass"
 ```
 
-### Upgrade Version
-1. Update `.env` → `WAZUH_VERSION=4.x.x`
-2. `docker compose pull`
-3. `docker compose down && docker compose up -d`
-4. Verify logs
+### 2. ตรวจสอบระบบ
+```bash
+docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
+# Dashboard: http://localhost:5601
+```
 
-## 🔒 Security Notes
-
-- `.secrets/` และ `.env` อยู่ใน `.gitignore` — ไม่ขึ้น git
-- เปลี่ยน password ใน `.env` ก่อน deploy จริง
-- Dashboard ใช้ HTTP — ใช้ใน Tailscale/LAN เชื่อถือได้เท่านั้น
-- จำกัด access dashboard: `ufw allow from <LAN> to any port 5601`
+### 3. เพิ่ม Agent (Windows/Linux)
+```bash
+# สร้าง agent key (เปลี่ยนชื่อ agent-name ตามต้องการ)
+docker exec -i wazuh.manager sh -c "printf Anagent-namenanynynEn1nQn | /var/ossec/bin/manage_agents"
+# ใช้ key ที่ได้ ไปใส่ที่ client ตอนติดตั้ง
+```
