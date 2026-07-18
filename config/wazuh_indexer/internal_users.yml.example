@@ -1,0 +1,25 @@
+# ============================================
+# Wazuh Indexer Internal Users
+# ============================================
+# 1. cp this file to internal_users.yml (in same dir)
+# 2. Generate hashes: docker exec wazuh.indexer bash
+#      /usr/share/wazuh-indexer/plugins/opensearch-security/tools/hash.sh
+# 3. Paste hashes below
+# 4. Restart: docker compose down && docker compose up -d
+# ============================================
+
+_meta:
+  type: "internalusers"
+  config_version: 2
+
+admin:
+  hash: "<GENERATE_HASH_FOR_INDEXER_PASSWORD>"
+  reserved: true
+  backend_roles:
+  - "admin"
+  description: "Admin user"
+
+kibanaserver:
+  hash: "<GENERATE_HASH_FOR_DASHBOARD_PASSWORD>"
+  reserved: true
+  description: "Dashboard internal user"
